@@ -1,6 +1,9 @@
 <?php
-// index.php
-// NepCourier homepage with FedEx-style design
+// Start session
+session_start();
+
+// Check if the user is logged in
+$logged_in = isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true;
 ?>
 
 <!DOCTYPE html>
@@ -22,14 +25,22 @@
                 <li><a href="index.php">Home</a></li>
                 <li><a href="about.php">About us</a></li>
                 <li><a href="contact.php">Contact</a></li>
-                <li><a href="login.php">Account</a></li>
+                <?php if ($logged_in): ?>
+                    <!-- If user is logged in, show the Logout link -->
+                    <li><a href="logout.php">Logout</a></li>
+                <?php else: ?>
+                    <!-- If user is not logged in, show the Login and Sign Up links -->
+                    <li><a href="login.php">Login</a></li>
+                    <li><a href="signup.php">Sign Up</a></li>
+                <?php endif; ?>
             </ul>
         </nav>
     </header>
 
     <div class="main">
         <div>
-            <h1>Welcome to NepCourier</h1>
+            <!-- Personalized welcome message -->
+            <h1>Welcome to NepCourier, <?php echo isset($_SESSION['first_name']) ? htmlspecialchars($_SESSION['first_name']) : 'Guest'; ?></h1>
             <div class="buttons">
                 <a href="booking.php">Book a Service</a>
                 <a href="pricing.php">Pricing</a>

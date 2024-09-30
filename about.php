@@ -30,26 +30,19 @@
 
         <div class="about-section">
             <h2>Company Overview</h2>
-            <p>We are a leading company in [Your Industry], committed to providing high-quality services and products to our customers. Established in [Year], our mission is to [Company Mission].</p>
+            <p>We are a leading company in the logistics and courier industry, 
+                committed to providing fast, reliable, and efficient delivery 
+                services to our customers. Established in 2020, our mission is
+                to revolutionize the way packages move across 
+                the country by integrating technology and customer-first services.</p>
         </div>
 
         <div class="about-section">
             <h2>Our Mission</h2>
-            <p>Our mission is to [Your Mission Statement]. We strive to [Details about how you achieve your mission].</p>
-        </div>
-
-        <div class="about-section">
-            <h2>Meet the Team</h2>
-            <div class="team-member">
-                <img src="1.png" alt="Team Member 1">
-                <h3>Sujan Basyal</h3>
-                <p>John is the visionary behind our company. With over 20 years of experience, he leads our team with dedication and passion.</p>
-            </div>
-            <div class="team-member">
-                <img src="1.png" alt="Team Member 2">
-                <h3>Sujan Basyal</h3>
-                <p>Jane oversees our technology and innovation strategies. Her expertise in technology drives our company forward.</p>
-            </div>
+            <p>Our mission is to deliver exceptional courier solutions with speed, 
+                safety, and transparency. We strive to enhance the efficiency of 
+                supply chains and individual deliveries, ensuring that every package
+                 arrives at its destination on time and in perfect condition.</p>
         </div>
     </div>
 </body>
