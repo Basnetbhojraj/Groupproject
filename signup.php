@@ -10,75 +10,66 @@ $first_name_err = $last_name_err = $email_err = $password_err = $confirm_passwor
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // Validate first name
-    if(empty(trim($_POST["first_name"]))){
+    if (empty(trim($_POST["first_name"]))) {
         $first_name_err = "Please enter your first name.";
-    } else{
+    } else {
         $first_name = trim($_POST["first_name"]);
     }
     
     // Validate last name
-    if(empty(trim($_POST["last_name"]))){
+    if (empty(trim($_POST["last_name"]))) {
         $last_name_err = "Please enter your last name.";
-    } else{
+    } else {
         $last_name = trim($_POST["last_name"]);
     }
     
     // Validate email
-    if(empty(trim($_POST["email"]))){
+    if (empty(trim($_POST["email"]))) {
         $email_err = "Please enter an email.";
-    } else{
-        // Prepare a select statement
+    } else {
+        // Prepare a select statement to check if the email is already taken
         $sql = "SELECT user_id FROM users WHERE email = ?";
-        
-        if($stmt = mysqli_prepare($link, $sql)){
-            // Bind variables to the prepared statement as parameters
+        if ($stmt = mysqli_prepare($link, $sql)) {
             mysqli_stmt_bind_param($stmt, "s", $param_email);
-            
-            // Set parameters
             $param_email = trim($_POST["email"]);
             
-            // Attempt to execute the prepared statement
-            if(mysqli_stmt_execute($stmt)){
-                /* store result */
+            if (mysqli_stmt_execute($stmt)) {
                 mysqli_stmt_store_result($stmt);
-                
-                if(mysqli_stmt_num_rows($stmt) == 1){
+                if (mysqli_stmt_num_rows($stmt) == 1) {
                     $email_err = "This email is already taken.";
-                } else{
+                } else {
                     $email = trim($_POST["email"]);
                 }
-            } else{
+            } else {
                 echo "Oops! Something went wrong. Please try again later.";
             }
-
-            // Close statement
             mysqli_stmt_close($stmt);
         }
     }
     
     // Validate password
-    if(empty(trim($_POST["password"]))){
+    if (empty(trim($_POST["password"]))) {
         $password_err = "Please enter a password.";     
-    } elseif(strlen(trim($_POST["password"])) < 6){
+    } elseif (strlen(trim($_POST["password"])) < 6) {
         $password_err = "Password must have at least 6 characters.";
-    } else{
+    } else {
         $password = trim($_POST["password"]);
     }
     
     // Validate confirm password
-    if(empty(trim($_POST["confirm_password"]))){
+    if (empty(trim($_POST["confirm_password"]))) {
         $confirm_password_err = "Please confirm password.";     
-    } else{
+    } else {
         $confirm_password = trim($_POST["confirm_password"]);
-        if(empty($password_err) && ($password != $confirm_password)){
+        if (empty($password_err) && ($password != $confirm_password)) {
             $confirm_password_err = "Password did not match.";
         }
     }
     
     // Validate user type
-    if(empty(trim($_POST["user_type"]))){
+    if (empty(trim($_POST["user_type"]))) {
         $user_type_err = "Please select a user type.";
-    } else{
+    } else {
         $user_type = trim($_POST["user_type"]);
     }
     
@@ -87,16 +78,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $address = trim($_POST["address"]);
     
     // Check input errors before inserting in database
-    if(empty($first_name_err) && empty($last_name_err) && empty($email_err) && empty($password_err) && empty($confirm_password_err) && empty($user_type_err)){
+    if (empty($first_name_err) && empty($last_name_err) && empty($email_err) && empty($password_err) && empty($confirm_password_err) && empty($user_type_err)) {
         
+        // Generate unique user ID
+        $user_id = generate_user_id($first_name, $last_name);
+
         // Prepare an insert statement
-        $sql = "INSERT INTO users (first_name, last_name, email, password_hash, phone_number, address, user_type) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO users (user_id, first_name, last_name, email, password_hash, phone_number, address, user_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
          
-        if($stmt = mysqli_prepare($link, $sql)){
+        if ($stmt = mysqli_prepare($link, $sql)) {
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "sssssss", $param_first_name, $param_last_name, $param_email, $param_password_hash, $param_phone_number, $param_address, $param_user_type);
+            mysqli_stmt_bind_param($stmt, "ssssssss", $param_user_id, $param_first_name, $param_last_name, $param_email, $param_password_hash, $param_phone_number, $param_address, $param_user_type);
             
             // Set parameters
+            $param_user_id = $user_id;
             $param_first_name = $first_name;
             $param_last_name = $last_name;
             $param_email = $email;
@@ -106,10 +101,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $param_user_type = $user_type;
             
             // Attempt to execute the prepared statement
-            if(mysqli_stmt_execute($stmt)){
+            if (mysqli_stmt_execute($stmt)) {
                 // Redirect to login page
                 header("location: login.php");
-            } else{
+            } else {
                 echo "Something went wrong. Please try again later.";
             }
 
@@ -121,6 +116,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Close connection
     mysqli_close($link);
 }
+
+// Function to generate a unique user ID
+function generate_user_id($first_name, $last_name) {
+    // First name, first letter of the last name
+    $user_id = $first_name . "_" . strtoupper(substr($last_name, 0, 1));
+    
+    // Append random number
+    $user_id .= "_" . rand(10000, 99999); // Add random number to ensure uniqueness
+    
+    return $user_id;
+}
 ?>
 
 <!DOCTYPE html>
@@ -128,7 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - NepCourier</title>
+    <title>Sign Up - NepCourier</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -180,7 +186,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <div class="form-group">
                     <button type="submit" class="form-button">Submit</button>
-                    
                 </div>
                 <p>Already have an account? <a href="login.php">Login</a>.</p>
             </form>
